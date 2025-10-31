@@ -1,0 +1,191 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Estamira</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome pour l’œil -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS personnalisé -->
+    <style>
+        /* Dégradé du background */
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f0e1, #B16A18);
+        }
+
+        /* Card du formulaire */
+        .login-card {
+            border-radius: 20px;
+            background-color: #fff;
+        }
+
+        .login-logo {
+            height: 120px;
+        }
+
+        .login-title {
+            color: #B16A18;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Toggle mot de passe */
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        /* Lien d'inscription */
+        .signup-link {
+            color: #B16A18;
+        }
+
+        /* Inputs */
+        input.form-control {
+            border-radius: 50px;
+        }
+
+        input.form-control:focus {
+            border-color: #B16A18;
+            box-shadow: 0 0 0 0.25rem rgba(177, 106, 24, 0.25);
+            outline: none;
+        }
+
+        /* Bouton */
+        button.btn-warning {
+            background-color: #B16A18;
+            border: none;
+        }
+        button.btn-warning:hover {
+            background-color: #9c5714;
+        }
+
+        /* Messages d'erreur */
+        .text-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<section class="vh-100 d-flex align-items-center justify-content-center gradient-bg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                <div class="card border-0 shadow-lg login-card">
+                    <div class="card-body p-5">
+
+                        <!-- Logo -->
+                        <div class="text-center mb-4">
+                            <a href="{% url 'accueil' %}">
+                                <img src="{% static 'img/logo-navbar.png' %}" alt="Estamira" class="img-fluid login-logo">
+                            </a>
+                            <small class="d-block mt-1 text-muted">Cliquez sur le logo pour revenir à l’accueil</small>
+                        </div>
+
+                        <h2 class="text-center mb-4 login-title">Connexion</h2>
+
+                        <form method="POST" action="{% url 'login' %}">
+                            {% csrf_token %}
+
+                            <!-- Email -->
+                            <div class="form-outline mb-4">
+                                <input type="email" name="username" class="form-control" placeholder="Adresse email" required />
+                                {% if form.username.errors %}
+                                    <small class="text-error">{{ form.username.errors.0 }}</small>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-outline mb-1 position-relative">
+                                <input type="password" name="password" id="loginPassword" class="form-control pe-5" placeholder="Mot de passe" required />
+                                <span class="toggle-password" onclick="toggleVisibility_login('loginPassword', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </span>
+                            </div>
+                            {% if form.non_field_errors %}
+                                <small class="text-error d-block mb-3">{{ form.non_field_errors.0 }}</small>
+                            {% endif %}
+
+
+                            <!-- Options -->
+                            <div class="row mb-4">
+                                <div class="col text-end">
+                                    <a href="{% url 'password_reset' %}" class="text-decoration-none">Mot de passe oublié ?</a>
+                                </div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-warning text-white fw-bold rounded-pill">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+                                </button>
+                            </div>
+
+                            <!-- Signup -->
+                            <p class="text-center text-muted mt-4 mb-0">
+                                Pas encore inscrit ?
+                                <a href="{% url 'signup' %}" class="fw-bold text-decoration-none signup-link">
+                                    Créez un compte
+                                </a>
+                            </p>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-dark text-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <h5 class="fw-bold mb-2" style="font-family: 'Playfair Display', serif;">Estamira</h5>
+    <p class="mb-2 text-light">© Tous droits réservés</p>
+    <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+      <a href="{% url 'contact' %}" class="text-light text-decoration-none">
+        <i class="bi bi-envelope-fill me-1"></i> contact@maisonelba.fr
+      </a>
+      <a href="https://wa.me/33782807396" target="_blank" class="text-success text-decoration-none">
+        <i class="bi bi-whatsapp me-1"></i> WhatsApp
+      </a>
+      <a href="{% url 'about' %}" class="text-light text-decoration-none">
+        <i class="bi bi-info-circle-fill me-1"></i> À propos
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS et dépendances -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function toggleVisibility_login(id, el) {
+    const input = document.getElementById(id);
+    const icon = el.querySelector('i');
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html lang="fr">
+{% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}À propos de nous{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/dropnav.css' %}">
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+<body>
+    {% block content %}
+<nav id="navbar" class="navbar navbar-expand-lg custom-navbar p-4 shadow-sm">
+  <div class="container position-relative">
+
+    <!-- Bouton menu mobile (à gauche en mobile) -->
+    <button class="navbar-toggler border-1" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Logo (centré en mobile, à gauche en desktop) -->
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'accueil' %}">
+      <img src="{% static 'img/logo-navbar.png' %}" alt="Logo" class="logo-img me-2">
+    </a>
+
+    <!-- Connexion/Déconnexion mobile (à droite en mobile) -->
+    <div class="mobile-login d-lg-none">
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="nav-link text-white bg-transparent border-0 d-flex flex-column align-items-center">
+          <i class="bi fs-3 bi-box-arrow-right"></i>
+        </button>
+      </form>
+      {% else %}
+      <a class="nav-link text-white" href="{% url 'login' %}">
+        <i class="bi fs-3 bi-person-circle"></i>
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Menu principal -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item px-3"><a class="nav-link" href="{% url 'accueil' %}">Accueil</a></li>
+        <li class="nav-item px-3"><a class="nav-link" href="{% url 'services' %}">Nos Services</a></li>
+        <li class="nav-item dropdown px-3">
+          <a class="nav-link dropdown-toggle" href="#" id="reservationDropdown" data-bs-toggle="dropdown">
+            Réservation
+          </a>
+        </li>
+
+        <li class="nav-item px-3">
+          <a class="nav-link" href="{% url 'mon_activite' %}">Mon activité</a>
+        </li>
+
+        <li class="nav-item px-3">
+          <a class="nav-link active" href="{% url 'about' %}">À propos</a>
+        </li>
+
+        <li class="nav-item px-3">
+          <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+        </li>
+      </ul>
+
+      <!-- Connexion desktop -->
+      <div class="d-none d-lg-block ms-auto">
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-light rounded-pill px-4">
+            <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+          </button>
+        </form>
+        {% else %}
+        <a class="btn btn-sm btn-outline-light rounded-pill px-4" href="{% url 'login' %}">
+          <i class="bi bi-person-circle me-1"></i> Connexion
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="py-5 bg-light">
+  <div class="container bg-container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <img src="{% static 'img/about-elba.png' %}" alt="Estamira" class="img-fluid rounded shadow-sm w-75">
+      </div>
+      <div class="col-lg-6">
+        <h2 class="display-5 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">À propos de Estamira</h2>
+        <p class="lead text-muted mb-3">
+          Estamira est bien plus qu’un service de réservation. C’est une expérience sur mesure, pensée pour les voyageurs exigeants, les familles en quête de confort, et les professionnels en déplacement.
+        </p>
+        <p class="text-muted">
+          Fondée avec passion, notre mission est de proposer des prestations haut de gamme : hébergements élégants, chauffeurs privés, et packs personnalisés. Chaque détail est soigneusement étudié pour garantir une expérience fluide, chaleureuse et mémorable.
+        </p>
+        <ul class="list-unstyled mt-4">
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Hébergements sélectionnés avec soin</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Chauffeurs professionnels et ponctuels</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Packs sur mesure selon vos envies</li>
+        </ul>
+        <a href="{% url 'contact' %}" class="btn btn-outline-dark rounded-pill px-4 mt-4">
+          <i class="bi bi-envelope-fill me-2"></i> Nous contacter
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-white border-top">
+  <div class="container text-center">
+    <h3 class="fw-bold mb-3" style="font-family: 'Cormorant Upright', serif;">Notre engagement</h3>
+    <p class="text-muted mb-4">
+      Offrir un service irréprochable, une transparence totale, et une attention constante à vos besoins. Chez Estamira, chaque client est traité comme un invité d’honneur.
+    </p>
+    <a href="{% url 'services' %}" class="btn btn-warning rounded-pill px-4">
+      <i class="bi bi-star-fill me-2"></i> Découvrir nos services
+    </a>
+  </div>
+</section>
+
+<!-- --------------------- FOOTER --------------------- -->
+<footer class="bg-dark text-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <h5 class="fw-bold mb-2" style="font-family: 'Playfair Display', serif;">Estamira</h5>
+    <p class="mb-2 text-light">© Tous droits réservés</p>
+    <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+      <a href="{% url 'contact' %}" class="text-light text-decoration-none">
+        <i class="bi bi-envelope-fill me-1"></i> contact@maisonelba.fr
+      </a>
+      <a href="https://wa.me/33782807396" target="_blank" class="text-success text-decoration-none">
+        <i class="bi bi-whatsapp me-1"></i> WhatsApp
+      </a>
+      <a href="{% url 'about' %}" class="text-light text-decoration-none">
+        <i class="bi bi-info-circle-fill me-1"></i> À propos
+      </a>
+    </div>
+  </div>
+</footer>
+
+    
+    {% endblock %}
+<!-- Bootstrap Bundle avec Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
