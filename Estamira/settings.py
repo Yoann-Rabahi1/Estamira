@@ -22,6 +22,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,7 +30,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Appli',
-    'authUser'
+    'authUser',
+    'import_export',
+    'crispy_forms',
+    'mathfilters',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'
 
 TIME_ZONE = 'UTC'
 
@@ -137,3 +142,52 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER="94ab94001@smtp-brevo.com"
 EMAIL_HOST_PASSWORD='SmH9wY2hXFP01MOD'
 DEFAULT_FROM_EMAIL="rabahiyoann@gmail.com" # Email expéditeur par défaut
+
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Estamira Admin",
+    "site_header": "Estamira Dashboard",
+    "site_brand": "Estamira",
+    "welcome_sign": "Bienvenue sur Estamira",
+    "copyright": "© 2025 Estamira",
+    "show_ui_builder": True,  # pour tester en live les couleurs / styles
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Site Public", "url": "/", "new_window": True},
+    ],
+    "icons": {
+        "auth.User": "fas fa-user",             # icône utilisateur
+        "appli.Logement": "fas fa-home",        # icône logement
+        "appli.Chauffeur": "fas fa-car",        # icône chauffeur
+        "appli.Pack": "fas fa-box-open",        # icône pack
+        "appli.Activite": "fas fa-futbol",      # icône activité
+        "appli.Image": "fas fa-image",          # icône image
+        "appli.ReservationPack": "fas fa-ticket-alt",
+        "appli.ReservationChauffeur": "fas fa-taxi",
+        "appli.ReservationLogement": "fas fa-bed",
+    },
+    "topmenu_custom_links": {
+        "Elba": [
+            {"name": "Reservations", "url": "/admin/appli/reservationpack/", "icon": "fas fa-ticket-alt"},
+            {"name": "Logements", "url": "/admin/appli/logement/", "icon": "fas fa-home"},
+            {"name": "Chauffeurs", "url": "/admin/appli/chauffeur/", "icon": "fas fa-car"},
+        ]
+    },
+    "related_modal_active": True,  # pour ouvrir les FK dans un modal
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "cosmo",
+    "dark_mode_theme": None,
+    "navbar": "navbar-dark bg-primary",
+    "sidebar": "sidebar-dark-primary",
+    "button_classes": {
+        "primary": "btn btn-primary",
+        "secondary": "btn btn-secondary",
+        "danger": "btn btn-danger",
+        "success": "btn btn-success",
+    },
+    "form_size": "form-control-sm",
+    "body_small_text": False,
+}
