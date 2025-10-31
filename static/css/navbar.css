@@ -1,0 +1,177 @@
+/* ==============================================
+   1. VARIABLES & TYPOGRAPHIE GLOBALE
+   ============================================== */
+:root {
+    /* Couleurs Estamira: Brun désert et Or/Sable */
+    --color-primary: #8b4513;   /* Brun terre, couleur principale de la nav */
+    --color-secondary: #f0e68c; /* Khaki clair / Or, couleur d'accent et de survol */
+    --color-accent: #a0522d;    /* Sienna, pour les détails visuels */
+    --color-text-light: #fff;   /* Texte principal (blanc) */
+    
+    /* Polices (assurez-vous qu'elles sont bien chargées dans base.html) */
+    --font-serif: 'Playfair Display', serif;
+    --font-sans: 'Montserrat', sans-serif;
+}
+
+
+/* ==============================================
+   2. NAVBAR CONTENEUR ET FOND
+   ============================================== */
+.custom-navbar {
+    background-color: var(--color-primary) !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+    transition: all 0.3s ease-in-out;
+    /* Petite bordure pour la finition visuelle */
+    border-bottom: 3px solid var(--color-accent);
+    font-family: var(--font-sans);
+}
+
+/* Option : Rendre la barre de navigation 'sticky' */
+#navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030; 
+}
+
+
+/* ==============================================
+   3. LOGO / BRANDING
+   ============================================== */
+.navbar-brand {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-text-light) !important;
+}
+
+.navbar-brand .logo-img {
+    height: 40px; 
+    margin-right: 0.5rem;
+}
+
+
+/* ==============================================
+   4. LIENS DE NAVIGATION PRINCIPAUX
+   ============================================== */
+.navbar-nav .nav-item {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.navbar-nav .nav-link {
+    color: var(--color-text-light) !important;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    position: relative;
+}
+
+/* État survol (Hover) et actif (Active) */
+.navbar-nav .nav-link:hover, 
+.navbar-nav .nav-link.active {
+    color: var(--color-secondary) !important;
+    transition: color 0.2s;
+}
+
+/* Sous-ligne animée pour l'effet poétique sous les liens */
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-secondary);
+    transition: width 0.3s ease-out;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+    width: 70%;
+}
+
+/* Mise en avant du lien "Réserver" */
+.navbar-nav .nav-link.fw-bold {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+}
+
+
+/* ==============================================
+   5. BOUTONS D'ACTION (DESKTOP)
+   ============================================== */
+
+/* Style pour le bouton principal 'Mon Espace' / 'Connexion' */
+.btn-estamira {
+    background-color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
+    color: var(--color-primary);
+    font-weight: 700;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Effet de survol : inverse les couleurs (brun sur fond or) */
+.btn-estamira:hover {
+    background-color: transparent;
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+/* Style pour le bouton de Déconnexion (discret) */
+.d-lg-block .btn-outline-light {
+    color: var(--color-text-light) !important;
+    border-color: var(--color-text-light) !important;
+}
+.d-lg-block .btn-outline-light:hover {
+    color: var(--color-secondary) !important;
+    border-color: var(--color-secondary) !important;
+    background-color: transparent;
+}
+
+
+/* ==============================================
+   6. MOBILE / RESPONSIVE (moins de 992px)
+   ============================================== */
+@media (max-width: 991.98px) {
+    
+    /* Centrage du logo en mobile */
+    .navbar-brand {
+        margin: 0 auto;
+    }
+
+    /* Le menu s'affiche dans un bloc clair */
+    .navbar-collapse {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Liens en mobile (couleur primaire) */
+    .navbar-nav .nav-link {
+        color: var(--color-primary) !important;
+        font-weight: 600;
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px dashed #eee;
+    }
+    .navbar-nav .nav-link:hover {
+        color: var(--color-accent) !important;
+    }
+
+    /* Retirer l'animation de sous-ligne en mobile */
+    .navbar-nav .nav-link::after,
+    .navbar-nav .nav-link.active::after {
+        content: none;
+    }
+
+    /* Icône du Toggler (Menu) */
+    .navbar-toggler {
+        border-color: var(--color-secondary) !important;
+    }
+    .navbar-toggler-icon {
+        filter: invert(1); /* Rend l'icône blanche pour le contraste sur le fond brun */
+    }
+}

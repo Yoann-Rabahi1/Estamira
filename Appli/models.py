@@ -58,6 +58,7 @@ class Restaurant(models.Model):
     ville = models.ForeignKey(Ville, on_delete=models.CASCADE, related_name='restaurants')
     type_cuisine = models.CharField(max_length=50)
     prix_moyen_eur = models.FloatField(default=0.0, help_text="Coût moyen estimé par personne (à titre indicatif).")
+    prix_moyen_dirham = models.FloatField(default=0.0, help_text="Coût moyen estimé par personne (à titre indicatif).")
 
     def __str__(self):
         return self.nom

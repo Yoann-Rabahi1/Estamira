@@ -84,7 +84,7 @@ class ActiviteAdmin(admin.ModelAdmin):
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'ville', 'type_cuisine', 'prix_moyen_eur', 'compte_packs_lies')
+    list_display = ('nom', 'ville', 'type_cuisine', 'prix_moyen_eur','prix_moyen_dirham', 'compte_packs_lies')
     search_fields = ('nom', 'ville__nom', 'type_cuisine')
     list_filter = ('ville', 'type_cuisine')
 

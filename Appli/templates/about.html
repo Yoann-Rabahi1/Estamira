@@ -1,91 +1,92 @@
-{%load static%}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
-{% block head %}
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}À propos de nous{% endblock %}</title>
+    <title>{% block title %}Estamira - L'âme du Maroc{% endblock %}</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{% static 'css/dropnav.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
-{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
 <body>
-    {% block content %}
-<nav id="navbar" class="navbar navbar-expand-lg custom-navbar p-4 shadow-sm">
-  <div class="container position-relative">
+<body>
+  {% block content %}
 
-    <!-- Bouton menu mobile (à gauche en mobile) -->
-    <button class="navbar-toggler border-1" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav" aria-controls="navbarNav"
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-lg custom-navbar p-4 shadow-sm">
+            <div class="container position-relative">
 
-    <!-- Logo (centré en mobile, à gauche en desktop) -->
-    <a class="navbar-brand d-flex align-items-center" href="{% url 'accueil' %}">
-      <img src="{% static 'img/logo-navbar.png' %}" alt="Logo" class="logo-img me-2">
-    </a>
+                <button class="navbar-toggler border-1" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-    <!-- Connexion/Déconnexion mobile (à droite en mobile) -->
-    <div class="mobile-login d-lg-none">
-      {% if user.is_authenticated %}
-      <form method="post" action="{% url 'logout' %}" class="d-inline">
-        {% csrf_token %}
-        <button type="submit" class="nav-link text-white bg-transparent border-0 d-flex flex-column align-items-center">
-          <i class="bi fs-3 bi-box-arrow-right"></i>
-        </button>
-      </form>
-      {% else %}
-      <a class="nav-link text-white" href="{% url 'login' %}">
-        <i class="bi fs-3 bi-person-circle"></i>
-      </a>
-      {% endif %}
-    </div>
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'accueil' %}">
+                    <span class="d-none d-sm-block">Estamira</span>
+                </a>
 
-    <!-- Menu principal -->
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item px-3"><a class="nav-link" href="{% url 'accueil' %}">Accueil</a></li>
-        <li class="nav-item px-3"><a class="nav-link" href="{% url 'services' %}">Nos Services</a></li>
-        <li class="nav-item dropdown px-3">
-          <a class="nav-link dropdown-toggle" href="#" id="reservationDropdown" data-bs-toggle="dropdown">
-            Réservation
-          </a>
-        </li>
+                <div class="mobile-login d-lg-none">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link text-white" href="{% url 'mon_activite' %}">
+                        <i class="bi fs-3 bi-person-circle"></i>
+                    </a>
+                    {% else %}
+                    <a class="nav-link text-white" href="{% url 'login' %}">
+                        <i class="bi fs-3 bi-person-circle"></i>
+                    </a>
+                    {% endif %}
+                </div>
 
-        <li class="nav-item px-3">
-          <a class="nav-link" href="{% url 'mon_activite' %}">Mon activité</a>
-        </li>
 
-        <li class="nav-item px-3">
-          <a class="nav-link active" href="{% url 'about' %}">À propos</a>
-        </li>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item px-3"><a class="nav-link" href="{% url 'accueil' %}">Accueil</a></li>
+                        <li class="nav-item px-3"><a class="nav-link" href="{% url 'services' %}">Nos services</a></li>
+                        
+                        <li class="nav-item px-3">
+                            <a class="nav-link" href="{% url 'reservation' %}">Réserver</a> 
+                        </li>
 
-        <li class="nav-item px-3">
-          <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-        </li>
-      </ul>
+                        <li class="nav-item px-3">
+                            <a class="nav-link " href="{% url 'mon_activite' %}">Mon activité</a>
+                        </li>
 
-      <!-- Connexion desktop -->
-      <div class="d-none d-lg-block ms-auto">
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'logout' %}" class="d-inline">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-sm btn-light rounded-pill px-4">
-            <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
-          </button>
-        </form>
-        {% else %}
-        <a class="btn btn-sm btn-outline-light rounded-pill px-4" href="{% url 'login' %}">
-          <i class="bi bi-person-circle me-1"></i> Connexion
-        </a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</nav>
+                        <li class="nav-item px-3">
+                            <a class="nav-link active" href="{% url 'about' %}">À propos</a>
+                        </li>
+
+                        <li class="nav-item px-3">
+                            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-none d-lg-block ms-auto">
+                        {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                             {% csrf_token %}
+                             <button type="submit" class="btn btn-sm btn-outline-light rounded-pill border-0 px-2" title="Déconnexion">
+                                 <i class="bi bi-box-arrow-right"></i> Déconnexion
+                             </button>
+                        </form>
+                        {% else %}
+                        <a class="btn btn-sm btn-estamira rounded-pill px-4" href="{% url 'login' %}">
+                            <i class="bi bi-person-circle me-1"></i> Connexion
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
 
 <section class="py-5 bg-light">
   <div class="container bg-container">
@@ -126,24 +127,30 @@
   </div>
 </section>
 
-<!-- --------------------- FOOTER --------------------- -->
-<footer class="bg-dark text-light py-4 mt-5 border-top">
-  <div class="container text-center">
-    <h5 class="fw-bold mb-2" style="font-family: 'Playfair Display', serif;">Estamira</h5>
-    <p class="mb-2 text-light">© Tous droits réservés</p>
-    <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
-      <a href="{% url 'contact' %}" class="text-light text-decoration-none">
-        <i class="bi bi-envelope-fill me-1"></i> contact@maisonelba.fr
-      </a>
-      <a href="https://wa.me/33782807396" target="_blank" class="text-success text-decoration-none">
-        <i class="bi bi-whatsapp me-1"></i> WhatsApp
-      </a>
-      <a href="{% url 'about' %}" class="text-light text-decoration-none">
-        <i class="bi bi-info-circle-fill me-1"></i> À propos
-      </a>
-    </div>
-  </div>
-</footer>
+  <!-- --------------------- FOOTER --------------------- -->
+<footer class="bg-dark text-light py-5 mt-5 border-top">
+        <div class="container text-center">
+            <h5 class="footer-logo mb-2 text-warning">Estamira</h5>
+            <p class="mb-4 text-light opacity-75">Plus qu’un voyage, une rencontre avec l’âme du Maroc.</p>
+            
+            <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 mb-4">
+                <a href="{% url 'contact' %}" class="text-light text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-envelope-fill me-2 fs-5"></i> <span>contact@estamira.fr</span>
+                </a>
+                <a href="https://wa.me/33782807396" target="_blank" class="text-success text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-whatsapp me-2 fs-5"></i> <span>Nous contacter sur WhatsApp</span>
+                </a>
+                <a href="{% url 'about' %}" class="text-light text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i> <span>L'Esprit Estamira</span>
+                </a>
+            </div>
+
+            <div class="text-light opacity-50 mt-4">
+                <small>© {{ "now"|date:"Y" }} Estamira. Tous droits réservés.</small>
+            </div>
+        </div>
+    </footer>
+
 
     
     {% endblock %}
