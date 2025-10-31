@@ -7,4 +7,5 @@ urlpatterns = [
     path('services', views.services, name='services'),
     path('mon_activite', views.mon_activite, name='mon_activite'),
     path('about', views.about, name='about'),
+    path('reservation', views.reservation_pack, name='reservation')
 ]
