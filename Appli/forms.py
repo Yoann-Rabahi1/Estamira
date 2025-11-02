@@ -18,7 +18,12 @@ COMMON_WIDGETS = {
         "class": "form-control rounded-3 shadow-sm",
         "min": 1
     }),
-    'devise_paiement': forms.Select(attrs={"class": "form-select rounded-3 shadow-sm"}),
+    'devise': forms.Select(attrs={"class": "form-select rounded-3 shadow-sm"}),
+    'date': forms.DateInput(attrs={
+        'type': 'date',
+        'class': 'form-control rounded-3 shadow-sm',
+        'required': 'required',
+    }),
     'date_debut': forms.DateInput(attrs={
         'type': 'date',
         'class': 'form-control rounded-3 shadow-sm',
@@ -28,17 +33,14 @@ COMMON_WIDGETS = {
         'type': 'date',
         'class': 'form-control rounded-3 shadow-sm',
     }),
-    'option_ryad': forms.CheckboxInput(attrs={"class": "form-check-input"}),
-    'option_restaurant': forms.CheckboxInput(attrs={"class": "form-check-input"}),
 }
 
 COMMON_LABELS = {
     'pack': 'Choisissez votre Pack Voyage',
     'nb_personne': 'Nombre de personnes',
-    'devise_paiement': 'Devise de paiement souhaitée',
-    'option_ryad': 'Ajouter l’option Ryad (Hébergement)',
-    'option_restaurant': 'Ajouter l’option Restaurant',
+    'devise': 'Devise de paiement souhaitée',
 }
+
 
 # =========================================================================
 # FORMULAIRE POUR LES PACKS D’UNE JOURNÉE
@@ -46,92 +48,80 @@ COMMON_LABELS = {
 
 class ReservationPackJourForm(forms.ModelForm):
     """Formulaire pour la réservation de packs d'une journée."""
-    
+
     class Meta:
         model = ReservationPackJour
         fields = [
             'pack',
             'nb_personne',
-            'devise_paiement',
-            'date_debut',
-            'option_ryad',
+            'devise',
+            'date',
         ]
-        
+
         widgets = {
             'pack': COMMON_WIDGETS['pack'],
             'nb_personne': COMMON_WIDGETS['nb_personne'],
-            'devise_paiement': COMMON_WIDGETS['devise_paiement'],
-            'date_debut': COMMON_WIDGETS['date_debut'],
-            'option_ryad': COMMON_WIDGETS['option_ryad'],
+            'devise': COMMON_WIDGETS['devise'],
+            'date': COMMON_WIDGETS['date'],
         }
-        
+
         labels = {
             'pack': COMMON_LABELS['pack'],
             'nb_personne': COMMON_LABELS['nb_personne'],
-            'devise_paiement': COMMON_LABELS['devise_paiement'],
-            'date_debut': 'Date de l’activité (jour unique)',
-            'option_ryad': COMMON_LABELS['option_ryad'],
+            'devise': COMMON_LABELS['devise'],
+            'date': 'Date de l’activité (jour unique)',
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['pack'].queryset = PackJour.objects.all()
-        self.fields['devise_paiement'].choices = MONNAIE_CHOICES
-        self.fields['option_ryad'].required = False
+        self.fields['devise'].choices = MONNAIE_CHOICES
 
-    def clean_date_debut(self):
-        date_debut = self.cleaned_data.get("date_debut")
+    def clean_date(self):
+        date = self.cleaned_data.get("date")
         today = timezone.now().date()
-        if date_debut and date_debut < today:
+        if date and date < today:
             raise forms.ValidationError("La date de l’activité ne peut pas être antérieure à aujourd’hui.")
-        return date_debut
+        return date
 
 
 # =========================================================================
-# FORMULAIRE POUR LES PACKS COMPLETS (3 jours et +)
+# FORMULAIRE POUR LES PACKS COMPLETS
 # =========================================================================
 
 class ReservationPackCompletForm(forms.ModelForm):
     """Formulaire pour la réservation de packs complets (plusieurs jours)."""
-    
+
     class Meta:
         model = ReservationPackComplet
         fields = [
             'pack',
             'nb_personne',
-            'devise_paiement',
+            'devise',
             'date_debut',
             'date_fin',
-            'option_ryad',
-            'option_restaurant',
         ]
-        
+
         widgets = {
             'pack': COMMON_WIDGETS['pack'],
             'nb_personne': COMMON_WIDGETS['nb_personne'],
-            'devise_paiement': COMMON_WIDGETS['devise_paiement'],
+            'devise': COMMON_WIDGETS['devise'],
             'date_debut': COMMON_WIDGETS['date_debut'],
             'date_fin': COMMON_WIDGETS['date_fin'],
-            'option_ryad': COMMON_WIDGETS['option_ryad'],
-            'option_restaurant': COMMON_WIDGETS['option_restaurant'],
         }
-        
+
         labels = {
             'pack': COMMON_LABELS['pack'],
             'nb_personne': COMMON_LABELS['nb_personne'],
-            'devise_paiement': COMMON_LABELS['devise_paiement'],
+            'devise': COMMON_LABELS['devise'],
             'date_debut': 'Date de début du séjour',
             'date_fin': 'Date de fin du séjour',
-            'option_ryad': COMMON_LABELS['option_ryad'],
-            'option_restaurant': COMMON_LABELS['option_restaurant'],
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['pack'].queryset = PackComplet.objects.all()
-        self.fields['devise_paiement'].choices = MONNAIE_CHOICES
-        self.fields['option_ryad'].required = False
-        self.fields['option_restaurant'].required = False
+        self.fields['devise'].choices = MONNAIE_CHOICES
 
     def clean(self):
         cleaned_data = super().clean()
@@ -139,7 +129,6 @@ class ReservationPackCompletForm(forms.ModelForm):
         date_fin = cleaned_data.get("date_fin")
         today = timezone.now().date()
 
-        # Validation chronologique
         if date_debut and date_debut < today:
             self.add_error("date_debut", "La date de début ne peut pas être antérieure à aujourd’hui.")
         if date_fin and date_fin < today:

@@ -51,8 +51,18 @@
                         <li class="nav-item px-3"><a class="nav-link" href="{% url 'accueil' %}">Accueil</a></li>
                         <li class="nav-item px-3"><a class="nav-link" href="{% url 'services' %}">Nos services</a></li>
                         
-                        <li class="nav-item px-3">
-                            <a class="nav-link" href="{% url 'reservation' %}">Réserver</a> 
+                        <li class="nav-item dropdown px-3">
+                            <a class="nav-link dropdown-toggle" href="#" id="reservationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Réserver
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="reservationDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'reservation_jour_base' %}">Pack 1 Jour</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'reservation_complet_base' %}">Pack Complet</a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li class="nav-item px-3">

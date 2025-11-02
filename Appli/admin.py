@@ -2,127 +2,101 @@ from django.contrib import admin
 from .models import (
     Ville,
     ActiviteJour,
-    ActiviteComplet,
     PackJour,
-    PackComplet,
     ReservationPackJour,
+    ActiviteComplet,
+    PackComplet,
     ReservationPackComplet,
+    OptionReservation,
 )
 
-# ----------------------------------------------------
-# 1. ADMIN DES COMPOSANTS DE BASE
-# ----------------------------------------------------
-
+# -----------------------------
+# VILLE
+# -----------------------------
 @admin.register(Ville)
 class VilleAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'description_generale')
-    search_fields = ('nom',)
-    ordering = ('nom',)
-    list_per_page = 20
+    list_display = ['nom']
+    search_fields = ['nom']
+    ordering = ['nom']
 
 
+# -----------------------------
+# ACTIVITÉ JOUR
+# -----------------------------
 @admin.register(ActiviteJour)
 class ActiviteJourAdmin(admin.ModelAdmin):
-    list_display = ('nom_activite', 'ville', 'duree_texte')
-    list_filter = ('ville',)
-    search_fields = ('nom_activite', 'ville__nom')
-    autocomplete_fields = ('ville',)
-    list_per_page = 20
-    ordering = ('ville', 'nom_activite')
+    list_display = ['nom', 'ville', 'duree']
+    list_filter = ['ville']
+    search_fields = ['nom', 'description']
+    ordering = ['ville', 'nom']
 
 
-@admin.register(ActiviteComplet)
-class ActiviteCompletAdmin(admin.ModelAdmin):
-    list_display = ('nom_activite', 'duree_estimee_heures')
-    search_fields = ('nom_activite',)
-    filter_horizontal = ('villes',)
-    ordering = ('nom_activite',)
-    list_per_page = 20
-
-
-# ----------------------------------------------------
-# 2. ADMIN DES PACKS
-# ----------------------------------------------------
-
-class ActiviteJourInline(admin.TabularInline):
-    model = PackJour.activites.through
-    extra = 1
-    verbose_name = "Activité (1 jour)"
-    verbose_name_plural = "Activités incluses (1 jour)"
-
-
-class ActiviteCompletInline(admin.TabularInline):
-    model = PackComplet.activites.through
-    extra = 1
-    verbose_name = "Activité complète"
-    verbose_name_plural = "Activités incluses (séjour complet)"
-
-
+# -----------------------------
+# PACK JOUR
+# -----------------------------
 @admin.register(PackJour)
 class PackJourAdmin(admin.ModelAdmin):
-    list_display = ('nom_pack', 'prix')
-    list_filter = ('prix',)
-    search_fields = ('nom_pack',)
-    inlines = [ActiviteJourInline]
-    exclude = ('activites',)
-    fieldsets = (
-        ('Informations générales', {
-            'fields': ('nom_pack', 'description', 'image_pack')
-        }),
-        ('Tarification', {
-            'fields': ('prix',)
-        }),
-    )
-    ordering = ('nom_pack',)
-    list_per_page = 20
+    list_display = ['nom', 'prix_mad', 'prix_eur', 'prix_usd']
+    list_filter = ['activites']
+    search_fields = ['nom', 'description']
+    filter_horizontal = ['activites']
+    ordering = ['nom']
 
 
-@admin.register(PackComplet)
-class PackCompletAdmin(admin.ModelAdmin):
-    list_display = ('nom_pack', 'prix')
-    list_filter = ('prix',)
-    search_fields = ('nom_pack',)
-    inlines = [ActiviteCompletInline]
-    exclude = ('activites',)
-    fieldsets = (
-        ('Informations générales', {
-            'fields': ('nom_pack', 'description', 'image_pack')
-        }),
-        ('Tarification', {
-            'fields': ('prix',)
-        }),
-    )
-    ordering = ('nom_pack',)
-    list_per_page = 20
-
-
-# ----------------------------------------------------
-# 3. ADMIN DES RÉSERVATIONS
-# ----------------------------------------------------
-
+# -----------------------------
+# RÉSERVATION PACK JOUR
+# -----------------------------
 @admin.register(ReservationPackJour)
 class ReservationPackJourAdmin(admin.ModelAdmin):
-    list_display = ('user', 'pack', 'date_debut', 'nb_personne', 'option_ryad', 'devise_paiement', 'date_reservation')
-    list_filter = ('devise_paiement', 'option_ryad', 'pack')
-    search_fields = ('user__email', 'pack__nom_pack')
-    autocomplete_fields = ('user', 'pack')
-    readonly_fields = ('date_reservation',)
-    ordering = ('-date_reservation',)
-    date_hierarchy = 'date_debut'
-    list_per_page = 25
+    list_display = ['pack', 'user', 'date', 'nb_personne', 'devise', 'date_reservation']
+    list_filter = ['devise']
+    search_fields = ['pack__nom', 'user__username']
+    ordering = ['-date_reservation']
 
 
+# -----------------------------
+# ACTIVITÉ COMPLÈTE (segmentée par jour)
+# -----------------------------
+@admin.register(ActiviteComplet)
+class ActiviteCompletAdmin(admin.ModelAdmin):
+    list_display = ['nom', 'pack', 'jour_numero']
+    list_filter = ['pack', 'jour_numero']
+    search_fields = ['nom', 'description']
+    ordering = ['pack', 'jour_numero', 'nom']
+
+
+# -----------------------------
+# PACK COMPLET
+# -----------------------------
+@admin.register(PackComplet)
+class PackCompletAdmin(admin.ModelAdmin):
+    list_display = ['nom', 'type_pack', 'duree_jours', 'prix_mad', 'prix_eur', 'prix_usd']
+    list_filter = ['type_pack']
+    search_fields = ['nom', 'description']
+    ordering = ['nom']
+
+
+# -----------------------------
+# RÉSERVATION PACK COMPLET
+# -----------------------------
 @admin.register(ReservationPackComplet)
 class ReservationPackCompletAdmin(admin.ModelAdmin):
-    list_display = (
-        'user', 'pack', 'date_debut', 'date_fin',
-        'nb_personne', 'option_ryad', 'option_restaurant',
-        'devise_paiement', 'date_reservation'
-    )
-    list_filter = ('devise_paiement', 'option_ryad', 'option_restaurant', 'pack')
-    search_fields = ('user__email', 'pack__nom_pack')
-    autocomplete_fields = ('user', 'pack')
-    readonly_fields = ('date_reservation',)
-    ordering = ('-date_reservation',)
-    date_hierarchy = 'date_debut'
-    list_per_page = 25
+    list_display = ['pack', 'user', 'date_debut', 'date_fin', 'nb_personne', 'devise', 'statut', 'date_reservation']
+    list_filter = ['devise', 'statut']
+    search_fields = ['pack__nom', 'user__username']
+    ordering = ['-date_reservation']
+
+
+# -----------------------------
+# OPTIONS DE RÉSERVATION
+# -----------------------------
+@admin.register(OptionReservation)
+class OptionReservationAdmin(admin.ModelAdmin):
+    list_display = [
+        'nom_option', 'type_option', 'quantite',
+        'prix_mad', 'prix_eur', 'prix_usd',
+        'reservation_complet', 'reservation_jour'
+    ]
+    list_filter = ['type_option']
+    search_fields = ['nom_option']
+    ordering = ['nom_option']

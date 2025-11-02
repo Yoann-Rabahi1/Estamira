@@ -5,9 +5,6 @@ from itertools import chain
 from django.db.models import Q
 from django.utils import timezone
 
-# =========================================================================
-# IMPORTS ACTUALISÉS
-# =========================================================================
 from .notification.email import (
     notifier_admins_reservation,
     notifier_utilisateur_reservation
@@ -21,6 +18,7 @@ from .models import (
     PackComplet,
     ReservationPackJour,
     ReservationPackComplet,
+    OptionReservation,
 )
 
 from .forms import ReservationPackJourForm, ReservationPackCompletForm
@@ -30,16 +28,12 @@ from .forms import ReservationPackJourForm, ReservationPackCompletForm
 # VUE : PAGE D’ACCUEIL
 # -----------------------------------------------------------------
 def home_page(request):
-    """
-    Affiche la page d'accueil avec les packs 1 jour et les packs complets.
-    """
     packs_jour = PackJour.objects.prefetch_related('activites').all()
     packs_complet = PackComplet.objects.prefetch_related('activites').all()
 
-    # Fusion des deux types de packs pour affichage global
     packs = sorted(
         chain(packs_jour, packs_complet),
-        key=lambda p: p.nom_pack
+        key=lambda p: p.nom
     )
 
     villes = Ville.objects.all()
@@ -65,13 +59,10 @@ def about(request):
 
 
 # -----------------------------------------------------------------
-# VUES DE RÉSERVATION
+# VUE : RÉSERVATION PACK JOUR
 # -----------------------------------------------------------------
 @login_required
 def reservation_pack_jour(request, pack_id=None):
-    """
-    Réservation d’un pack 1 jour.
-    """
     user = request.user
     montant_total = None
     initial_data = {}
@@ -79,7 +70,7 @@ def reservation_pack_jour(request, pack_id=None):
     if pack_id:
         pack_a_reserver = get_object_or_404(PackJour, pk=pack_id)
         initial_data['pack'] = pack_a_reserver
-        montant_total = pack_a_reserver.prix  # prix de base
+        montant_total = pack_a_reserver.get_prix_par_devise("MAD")
 
     if request.method == "POST":
         form = ReservationPackJourForm(request.POST, initial=initial_data)
@@ -94,7 +85,11 @@ def reservation_pack_jour(request, pack_id=None):
         reservation.date_reservation = timezone.now()
         reservation.save()
 
-        montant_total = reservation.pack.prix * reservation.nb_personne
+        montant_total = reservation.pack.get_prix_par_devise(reservation.devise) * reservation.nb_personne
+
+        # Ajout du total des options liées
+        for option in reservation.options.all():
+            montant_total += option.get_prix_par_devise(reservation.devise) * option.quantite
 
         try:
             notifier_admins_reservation(reservation)
@@ -103,12 +98,13 @@ def reservation_pack_jour(request, pack_id=None):
             messages.warning(request, "Réservation enregistrée, mais l'envoi d'e-mail a échoué.")
 
         messages.success(request, "Réservation Pack 1 Jour enregistrée avec succès !")
-        return render(request, "reservation/success_pack.html", {
+        return render(request, "reservation/success_pack_jour.html", {
             "reservation": reservation,
+            "montant_total": montant_total,
         })
 
     packs_standards = PackJour.objects.all()
-    return render(request, 'reservation/pack.html', {
+    return render(request, 'reservation/jour.html', {
         "form": form,
         "montant_total": montant_total,
         "packs_standards": packs_standards,
@@ -116,11 +112,11 @@ def reservation_pack_jour(request, pack_id=None):
     })
 
 
+# -----------------------------------------------------------------
+# VUE : RÉSERVATION PACK COMPLET
+# -----------------------------------------------------------------
 @login_required
 def reservation_pack_complet(request, pack_id=None):
-    """
-    Réservation d’un pack complet (séjour de plusieurs jours).
-    """
     user = request.user
     montant_total = None
     initial_data = {}
@@ -128,7 +124,7 @@ def reservation_pack_complet(request, pack_id=None):
     if pack_id:
         pack_a_reserver = get_object_or_404(PackComplet, pk=pack_id)
         initial_data['pack'] = pack_a_reserver
-        montant_total = pack_a_reserver.prix
+        montant_total = pack_a_reserver.get_prix_par_devise("MAD")
 
     if request.method == "POST":
         form = ReservationPackCompletForm(request.POST, initial=initial_data)
@@ -143,7 +139,11 @@ def reservation_pack_complet(request, pack_id=None):
         reservation.date_reservation = timezone.now()
         reservation.save()
 
-        montant_total = reservation.pack.prix * reservation.nb_personne
+        montant_total = reservation.pack.get_prix_par_devise(reservation.devise) * reservation.nb_personne
+
+        # Ajout du total des options liées
+        for option in reservation.options.all():
+            montant_total += option.get_prix_par_devise(reservation.devise) * option.quantite
 
         try:
             notifier_admins_reservation(reservation)
@@ -152,27 +152,24 @@ def reservation_pack_complet(request, pack_id=None):
             messages.warning(request, "Réservation enregistrée, mais l'envoi d'e-mail a échoué.")
 
         messages.success(request, "Réservation Pack Complet enregistrée avec succès !")
-        return render(request, "reservation/success_pack.html", {
+        return render(request, "reservation/success_pack_complet.html", {
             "reservation": reservation,
+            "montant_total": montant_total,
         })
 
     packs_standards = PackComplet.objects.all()
-    return render(request, 'reservation/pack.html', {
+    return render(request, 'reservation/complet.html', {
         "form": form,
         "montant_total": montant_total,
         "packs_standards": packs_standards,
         "is_pack_jour": False,
     })
 
-
 # -----------------------------------------------------------------
 # VUE : MES ACTIVITÉS
 # -----------------------------------------------------------------
 @login_required
 def mon_activite(request):
-    """
-    Affiche toutes les réservations de l'utilisateur (jour + complet).
-    """
     reservations_jour = ReservationPackJour.objects.filter(user=request.user)
     reservations_complet = ReservationPackComplet.objects.filter(user=request.user)
 
