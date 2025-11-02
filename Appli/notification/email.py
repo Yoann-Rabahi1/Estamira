@@ -3,25 +3,31 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from Appli.models import ReservationPack
+from Appli.models import ReservationPackJour, ReservationPackComplet
 
 User = get_user_model()
+
 
 
 # ====================================================================
 # NOTIFICATIONS ADMINISTRATEURS
 # ====================================================================
 
-def notifier_admins_reservation_pack(reservation):
-    """Notifie les admins d'une nouvelle réservation de Pack."""
+def notifier_admins_reservation(reservation):
+    """
+    Notifie les admins d'une nouvelle réservation de Pack.
+    La fonction accepte soit ReservationPackJour soit ReservationPackComplet.
+    """
     subject = "Nouvelle réservation Estamira"
     
-    # NOTE: L'objet 'reservation' n'a plus 'pack_personnalise'
+    # La réservation Pack Jour n'a pas de 'date_fin', mais elle n'est pas utilisée 
+    # pour le calcul ici. Le template doit être conçu pour gérer un 'date_fin' vide.
     html_content = render_to_string("email/admin/reservation_notification_pack.html", {
         "user": reservation.user,
         "pack": reservation.pack,
         "date_debut": reservation.date_debut,
-        "date_fin": reservation.date_fin,
+        # Si c'est un Pack Jour, date_fin sera None. Le template doit s'adapter.
+        "date_fin": getattr(reservation, 'date_fin', None), 
         "nb_personne": reservation.nb_personne,
         "devise_paiement": reservation.devise_paiement,
         "montant_total": reservation.montant_total
@@ -38,14 +44,14 @@ def notifier_admins_reservation_pack(reservation):
 # NOTIFICATIONS UTILISATEURS
 # ====================================================================
 
-def notifier_utilisateur_reservation_pack(reservation):
+def notifier_utilisateur_reservation(reservation):
     """Envoie la confirmation de réservation de Pack à l'utilisateur."""
     subject = "Confirmation de votre réservation Estamira"
     html_content = render_to_string("email/utilisateur/reservation_notif_user_pack.html", {
         "user": reservation.user,
         "pack": reservation.pack,
         "date_debut": reservation.date_debut,
-        "date_fin": reservation.date_fin,
+        "date_fin": getattr(reservation, 'date_fin', None), 
         "nb_personne": reservation.nb_personne,
         "devise_paiement": reservation.devise_paiement,
         "montant_total": reservation.montant_total
@@ -79,7 +85,10 @@ def notifier_utilisateur_changement_statut(reservation):
 # DÉTECTEUR DE CHANGEMENT DE STATUT (Signal Django)
 # ====================================================================
 
-@receiver(pre_save, sender=ReservationPack)
+# CORRECTION : Le signal doit écouter les deux modèles de réservation.
+
+@receiver(pre_save, sender=ReservationPackJour)
+@receiver(pre_save, sender=ReservationPackComplet)
 def detecter_changement_statut(sender, instance, **kwargs):
     """
     Détecte un changement de statut AVANT que la réservation soit sauvegardée.
@@ -94,5 +103,4 @@ def detecter_changement_statut(sender, instance, **kwargs):
 
         # Vérifie la différence de statut
         if ancien.statut != instance.statut:
-            # Utilise une fonction plutôt qu'un appel direct pour une meilleure organisation
             notifier_utilisateur_changement_statut(instance)
